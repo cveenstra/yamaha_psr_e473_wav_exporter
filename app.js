@@ -1,8 +1,8 @@
 import { FFmpeg } from 'https://esm.sh/@ffmpeg/ffmpeg@0.12.10';
 import { fetchFile, toBlobURL } from 'https://esm.sh/@ffmpeg/util@0.12.1';
 
-const CORE_BASE = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-const FF_BASE   = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm';
+const CORE_BASE  = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+const WORKER_URL = './vendor/ffmpeg-worker.js';
 
 const dropEl = document.getElementById('drop');
 const fileEl = document.getElementById('file');
@@ -69,7 +69,7 @@ async function loadFFmpeg() {
     }
   });
   await ffmpeg.load({
-    classWorkerURL: await toBlobURL(`${FF_BASE}/worker.js`, 'text/javascript'),
+    classWorkerURL: WORKER_URL,
     coreURL: await toBlobURL(`${CORE_BASE}/ffmpeg-core.js`, 'text/javascript'),
     wasmURL: await toBlobURL(`${CORE_BASE}/ffmpeg-core.wasm`, 'application/wasm'),
   });
