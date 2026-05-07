@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yamaha PSR-E473 WAV Exporter</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <h1>Yamaha PSR-E473 WAV Exporter</h1>
+    <p class="lede">Drop in any audio or video file. Get back a WAV the keyboard will actually load.</p>
+
+    <section class="spec">
+      <h2>Output spec</h2>
+      <ul>
+        <li>WAV, 44.1 kHz, 16-bit, stereo PCM</li>
+        <li>Filename: ASCII, uppercase, no spaces (e.g. <code>SONG.WAV</code>)</li>
+        <li>Drop on FAT32 USB <strong>root</strong> &rarr; <kbd>SONG</kbd> button &rarr; dial past internal songs</li>
+      </ul>
+    </section>
+
+    <section class="dropzone" id="drop">
+      <input type="file" id="file" accept="audio/*,video/*" hidden>
+      <p>Click to pick a file, or drop one here.</p>
+      <p class="hint">mp3, m4a, mp4, wav, flac, ogg, webm, aac &mdash; anything ffmpeg reads.</p>
+    </section>
+
+    <section class="controls">
+      <label>Filename
+        <input type="text" id="name" placeholder="SONG" maxlength="16" autocomplete="off">
+        <span class="hint">.WAV added automatically. Stripped to A&ndash;Z 0&ndash;9.</span>
+      </label>
+      <button id="go" disabled>Convert</button>
+    </section>
+
+    <section id="status" hidden>
+      <div class="bar"><div id="bar-fill"></div></div>
+      <p id="msg"></p>
+    </section>
+
+    <details class="about">
+      <summary>Why this exists</summary>
+      <p>The PSR-E473 will only play WAV files that are exactly 44.1 kHz, 16-bit, stereo PCM. Any deviation &mdash; 48 kHz, 24-bit, mono, compressed WAV &mdash; produces a load error on the keyboard. This page re-encodes any input to the exact spec entirely in your browser using <a href="https://github.com/ffmpegwasm/ffmpeg.wasm">ffmpeg.wasm</a>. Nothing is uploaded.</p>
+      <p>Source: <a href="https://github.com/cveenstra/yamaha_psr_e473_wav_exporter">github.com/cveenstra/yamaha_psr_e473_wav_exporter</a></p>
+    </details>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

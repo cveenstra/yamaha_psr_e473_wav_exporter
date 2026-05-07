@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>YouTube → Yamaha PSR-E473 WAV</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 3rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.4rem; }
+  input[type=url] { width: 100%; padding: .6rem; font-size: 1rem; box-sizing: border-box; }
+  button { margin-top: .8rem; padding: .7rem 1.4rem; font-size: 1rem; cursor: pointer; background: #2266cc; color: #fff; border: 0; border-radius: 4px; }
+  button:disabled { background: #888; cursor: wait; }
+  .spec { background: #f3f3f3; padding: .8rem 1rem; border-radius: 4px; font-size: .9rem; margin: 1rem 0; }
+  .spec code { background: #e8e8e8; padding: 1px 4px; border-radius: 2px; }
+  #status { margin-top: 1rem; font-size: .95rem; }
+  .err { color: #c33; }
+  .ok  { color: #2a7a2a; }
+</style>
+</head>
+<body>
+  <h1>YouTube → Yamaha PSR-E473 WAV</h1>
+  <p>Pulls audio from a YouTube URL, converts to the format the keyboard requires.</p>
+  <div class="spec">
+    <strong>Output:</strong> WAV, 44.1 kHz, 16-bit, stereo PCM<br>
+    <strong>Filename:</strong> ASCII only, uppercase, no spaces (e.g. <code>SONG.WAV</code>)<br>
+    <strong>Drop on USB:</strong> root of FAT32 drive, then <code>SONG</code> button → dial past internal songs.
+  </div>
+
+  <form id="f">
+    <input id="url" type="url" name="url" required placeholder="https://www.youtube.com/watch?v=...">
+    <button id="go" type="submit">Convert &amp; Download</button>
+  </form>
+  <div id="status"></div>
+
+<script>
+const f = document.getElementById('f');
+const go = document.getElementById('go');
+const stat = document.getElementById('status');
+
+f.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  stat.className = '';
+  stat.textContent = 'Downloading + converting… (may take 30-90s for long videos)';
+  go.disabled = true;
+
+  const fd = new FormData(f);
+  try {
+    const res = await fetch('/convert', { method: 'POST', body: fd });
+    if (!res.ok) {
+      let msg = 'Failed';
+      try { msg = (await res.json()).error || msg; } catch {}
+      stat.className = 'err';
+      stat.textContent = 'Error: ' + msg;
+      go.disabled = false;
+      return;
+    }
+    const blob = await res.blob();
+    const cd = res.headers.get('Content-Disposition') || '';
+    const m = cd.match(/filename="?([^";]+)"?/);
+    const name = m ? m[1] : 'SONG.WAV';
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    stat.className = 'ok';
+    stat.textContent = 'Done. Saved as ' + name + '. Copy to FAT32 USB root.';
+  } catch (err) {
+    stat.className = 'err';
+    stat.textContent = 'Error: ' + err.message;
+  } finally {
+    go.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
