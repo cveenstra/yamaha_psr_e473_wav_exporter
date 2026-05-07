@@ -1,7 +1,7 @@
 import { FFmpeg } from 'https://esm.sh/@ffmpeg/ffmpeg@0.12.10';
 import { fetchFile, toBlobURL } from 'https://esm.sh/@ffmpeg/util@0.12.1';
 
-const CORE_BASE  = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+const CORE_BASE  = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
 const WORKER_URL = new URL('./vendor/ffmpeg-worker.js', import.meta.url).href;
 
 const dropEl = document.getElementById('drop');
